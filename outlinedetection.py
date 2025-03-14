@@ -1,6 +1,8 @@
 # outlinedetection.py (updated)
 import cv2
 from camera_config import init_video_capture, release_video_capture
+import numpy as np
+
 def safe_div(x,y):
     if y==0: return 0
     return x/y
@@ -77,7 +79,9 @@ def main():
         opening = cv2.morphologyEx(erosion, cv2.MORPH_OPEN, kernel)
         closing = cv2.morphologyEx(opening, cv2.MORPH_CLOSE, kernel)
 
-        _,contours,hierarchy = cv2.findContours(closing,cv2.RETR_TREE,cv2.CHAIN_APPROX_NONE)
+        # Convert to grayscale (option 1) or use RETR_EXTERNAL mode (option 2)
+        _, contours, hierarchy = cv2.findContours(cv2.cvtColor(closing, cv2.COLOR_BGR2GRAY), cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
+        #_, contours, hierarchy = cv2.findContours(closing, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
 
         # focus on only the largest outline by area
         areas = []
