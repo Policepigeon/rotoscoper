@@ -68,7 +68,8 @@ def main():
             exit()
 
         thresh= cv2.getTrackbarPos("threshold", windowName)
-        ret,thresh1 = cv2.threshold(frame,thresh,255,cv2.THRESH_BINARY)
+        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        ret,thresh1 = cv2.threshold(gray,thresh,255,cv2.THRESH_BINARY)
 
         kern=cv2.getTrackbarPos("kernel", windowName)
         kernel = np.ones((kern,kern),np.uint8)
@@ -79,10 +80,7 @@ def main():
         opening = cv2.morphologyEx(erosion, cv2.MORPH_OPEN, kernel)
         closing = cv2.morphologyEx(opening, cv2.MORPH_CLOSE, kernel)
 
-        # Convert to grayscale (option 1) or use RETR_EXTERNAL mode (option 2)
-        _, contours, hierarchy = cv2.findContours(cv2.cvtColor(closing, cv2.COLOR_BGR2GRAY), cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
-        #_, contours, hierarchy = cv2.findContours(closing, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
-
+        _, contours, hierarchy = cv2.findContours(closing, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
         # focus on only the largest outline by area
         areas = []
         for contour in contours:
@@ -91,7 +89,7 @@ def main():
 
         max_area = max(areas)
         max_area_index = areas.index(max_area)
-        cnt = contours[max_area_index - 1]
+        cnt = contours[max_area_index]
 
         # compute the rotated bounding box of the contour
         orig = frame.copy()
@@ -163,7 +161,7 @@ def midpoint(pointA, pointB):
 
 if __name__ == "__main__":
     main()
-    cv2.destroyAllWindows()
 
 if __name__ == "__main__":
     main()
+
